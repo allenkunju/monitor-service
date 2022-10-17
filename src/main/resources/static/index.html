@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Monitor Service</title>
+</head>
+<body>
+    <form>
+        <h4>Usage Monitoring System</h4>
+        Please enter the file name:
+        <input type="text" id="filename" name="filename">
+        <input type="button" value="Submit" onclick="countUsers()">
+        <div id="result" hidden>
+            The number of unique users are : <label id="count"></label>
+        </div>
+        <div id="error" >
+            <label id="message" style="color:red"></label>
+        </div>
+    </form>
+</body>
+<script>
+    const countUsers = async () => {
+      var filename = document.getElementById('filename').value
+      const response = await fetch('http://localhost:8080/monitor/csv-report?filename='+filename, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const result = await response.json(); //extract JSON from the http response
+      if (response.status != 200) {
+          document.getElementById("result").hidden = true;
+          document.getElementById("error").hidden = false;
+          document.getElementById("message").innerText = result["message"];
+      } else {
+          var hits = result["uniqueHits"];
+
+          document.getElementById("error").hidden = true;
+          document.getElementById("result").hidden = false;
+          document.getElementById("count").innerText = hits;
+      }
+    }
+
+</script>
+</html>
